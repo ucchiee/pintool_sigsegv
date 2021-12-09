@@ -1,7 +1,6 @@
-# NullPin
+# pintool_sigsegv
 
-Template for creating Pintool.
-Can be used for estimating the overhead of Pin.
+An example pintool that surpress SIGSEGV.
 
 ## build
 
