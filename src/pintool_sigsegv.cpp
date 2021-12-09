@@ -30,10 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "pin.H"
-#include <iostream>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <iostream>
+
+#include "pin.H"
 
 /*
  * trace inspection (instrumentation function)
@@ -45,21 +48,27 @@
  *
  * @trace:      instructions trace; given by PIN
  */
-static void trace_inspect(TRACE trace, VOID *v) {
-  /* iterators */
-  BBL bbl;
-  INS ins;
+/* static void trace_inspect(TRACE trace, VOID *v) { */
+/*     /1* iterators *1/ */
+/*     BBL bbl; */
+/*     INS ins; */
 
-  /* instruction counter */
-  size_t ins_ct = 0;
+/*     /1* instruction counter *1/ */
+/*     size_t ins_ct = 0; */
 
-  /* traverse all the BBLs in the trace */
-  for (bbl = TRACE_BblHead(trace); BBL_Valid(bbl); bbl = BBL_Next(bbl)) {
-    /* traverse all the instructions in the BBL */
-    for (ins = BBL_InsHead(bbl); INS_Valid(ins); ins = INS_Next(ins))
-      /* analyze the instruction; dummy */
-      ins_ct++;
-  }
+/*     /1* traverse all the BBLs in the trace *1/ */
+/*     for (bbl = TRACE_BblHead(trace); BBL_Valid(bbl); bbl = BBL_Next(bbl)) { */
+/*         /1* traverse all the instructions in the BBL *1/ */
+/*         for (ins = BBL_InsHead(bbl); INS_Valid(ins); ins = INS_Next(ins)) */
+/*             /1* analyze the instruction; dummy *1/ */
+/*             ins_ct++; */
+/*     } */
+/* } */
+
+static BOOL sig_handler(THREADID, INT32, CONTEXT *, BOOL,
+                        const EXCEPTION_INFO *, void *) {
+    std::cerr << "catched sigsegv" << std::endl;
+    return TRUE;
 }
 
 /*
@@ -68,22 +77,29 @@ static void trace_inspect(TRACE trace, VOID *v) {
  * used for estimating the overhead of Pin
  */
 int main(int argc, char **argv) {
-  /* initialize symbol processing */
-  PIN_InitSymbols();
+    /* initialize symbol processing */
+    PIN_InitSymbols();
 
-  /* initialize PIN */
-  if (PIN_Init(argc, argv)) {
-    std::cerr
-        << "Sth error in PIN_Init. Plz use the right command line options."
-        << std::endl;
-    return -1;
-  }
+    /* initialize PIN */
+    if (PIN_Init(argc, argv)) {
+        std::cerr
+            << "Sth error in PIN_Init. Plz use the right command line options."
+            << std::endl;
+        return -1;
+    }
 
-  /* register trace_ins() to be called for every trace */
-  TRACE_AddInstrumentFunction(trace_inspect, NULL);
+    std::cerr << "before intercept" << std::endl;
 
-  PIN_StartProgram();
+    PIN_InterceptSignal(SIGSEGV, sig_handler, 0);
+    /* PIN_UnblockSignal(SIGSEGV, TRUE); */
+    
 
-  return 0;
+    std::cerr << "after intercept" << std::endl;
+
+    /* register trace_ins() to be called for every trace */
+    /* TRACE_AddInstrumentFunction(trace_inspect, NULL); */
+
+    PIN_StartProgram();
+
+    return 0;
 }
-
