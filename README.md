@@ -13,3 +13,9 @@ make
 ```bash
 ./pin-3.20-98437-gf02b61307-gcc-linux/pin -t src/obj-intel64/nullpin.so -- /bin/ls
 ```
+
+## release note
+
+- v0.0.1: added prototype
+- v0.0.2: added test program
+- v0.0.3: fixed test program
