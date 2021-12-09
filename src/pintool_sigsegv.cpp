@@ -88,16 +88,8 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    std::cerr << "before intercept" << std::endl;
-
     PIN_InterceptSignal(SIGSEGV, sig_handler, 0);
     /* PIN_UnblockSignal(SIGSEGV, TRUE); */
-    
-
-    std::cerr << "after intercept" << std::endl;
-
-    /* register trace_ins() to be called for every trace */
-    /* TRACE_AddInstrumentFunction(trace_inspect, NULL); */
 
     PIN_StartProgram();
 
