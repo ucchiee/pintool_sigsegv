@@ -67,8 +67,8 @@
 
 static BOOL sig_handler(THREADID, INT32, CONTEXT *, BOOL,
                         const EXCEPTION_INFO *, void *) {
-    std::cerr << "catched sigsegv" << std::endl;
-    return TRUE;
+    std::cerr << "catched sigsegv in pintool" << std::endl;
+    return TRUE;  // will transfer signal to app
 }
 
 /*
